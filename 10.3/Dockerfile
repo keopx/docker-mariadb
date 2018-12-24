@@ -59,20 +59,6 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		tzdata \
 && rm -rf /var/lib/apt/lists/*
 
-ENV GPG_KEYS \
-	199369E5404BD5FC7D2FE43BCBCB082A1BB943DB \
-	177F4010FE56CA3336300305F1656F24C74CD1D8
-
-RUN set -ex; \
-	export GNUPGHOME="$(mktemp -d)"; \
-	for key in $GPG_KEYS; do \
-		gpg --batch --keyserver ha.pool.sks-keyservers.net --recv-keys "$key"; \
-	done; \
-	gpg --batch --export $GPG_KEYS > /etc/apt/trusted.gpg.d/mariadb.gpg; \
-	command -v gpgconf > /dev/null && gpgconf --kill all || :; \
-	rm -r "$GNUPGHOME"; \
-apt-key list
-
 # MariaDB 10.3 repository list - created 2018-12-01 12:06 UTC
 RUN \
    apt-key adv --no-tty --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8  || \
@@ -110,7 +96,7 @@ VOLUME /var/lib/mysql
 
 # MariaDB start command.
 COPY scripts/docker-entrypoint.sh /usr/local/bin/
-RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
+RUN ln -s /usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
