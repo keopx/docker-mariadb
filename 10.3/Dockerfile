@@ -13,10 +13,9 @@ RUN \
   echo "deb http://security.debian.org/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
   echo "deb-src http://security.debian.org/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
   # Update repositories cache and distribution
-  apt-get -qq update && apt-get -qqy upgrade
-
-RUN \
-  apt-get -yqq install apt-transport-https lsb-release ca-certificates gnupg2 openssl wget dirmngr software-properties-common && rm -rf /var/lib/apt/lists/*
+  apt-get -qq update && apt-get -qqy upgrade && \
+  apt-get -yqq install apt-transport-https lsb-release ca-certificates gnupg2 openssl wget dirmngr software-properties-common && \
+  rm -rf /var/lib/apt/lists/*
 
 # add our user and group first to make sure their IDs get assigned consistently, regardless of whatever dependencies get added
 RUN groupadd -r mysql && useradd -r -g mysql mysql
@@ -64,14 +63,10 @@ RUN \
    apt-key adv --no-tty --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8  || \
    apt-key adv --recv-keys --keyserver pgp.mit.edu 0xF1656F24C74CD1D8  || \
    apt-key adv --recv-keys --keyserver keyserver.pgp.com 0xF1656F24C74CD1D8  || \
-   apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
-
-RUN \
+   apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8 && \
    add-apt-repository "deb [arch=amd64] http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" && \
    echo "deb http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" > /etc/apt/sources.list.d/mariadb.list && \
-   echo "deb-src http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" > /etc/apt/sources.list.d/mariadb.list
-
-RUN \
+   echo "deb-src http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" > /etc/apt/sources.list.d/mariadb.list && \
    apt-get update && \
    apt-get -yqq install mariadb-server
 
