@@ -1,4 +1,4 @@
-FROM debian:stretch
+FROM debian:buster
 
 MAINTAINER keopx <keopx@keopx.net>
 
@@ -8,10 +8,10 @@ ENV MARIADB_MAJOR 10.3
 
 # Set repositories
 RUN \
-  echo "deb http://ftp.de.debian.org/debian/ stretch main non-free contrib" > /etc/apt/sources.list && \
-  echo "deb-src http://ftp.de.debian.org/debian/ stretch main non-free contrib" >> /etc/apt/sources.list && \
-  echo "deb http://security.debian.org/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
-  echo "deb-src http://security.debian.org/ stretch/updates main contrib non-free" >> /etc/apt/sources.list && \
+  echo "deb http://ftp.de.debian.org/debian/ buster main non-free contrib" > /etc/apt/sources.list && \
+  echo "deb-src http://ftp.de.debian.org/debian/ buster main non-free contrib" >> /etc/apt/sources.list && \
+  echo "deb http://security.debian.org/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
+  echo "deb-src http://security.debian.org/ buster/updates main contrib non-free" >> /etc/apt/sources.list && \
   # Update repositories cache and distribution
   apt-get -qq update && apt-get -qqy upgrade
 
@@ -67,9 +67,9 @@ RUN \
    apt-key adv --recv-keys --keyserver keyserver.ubuntu.com 0xF1656F24C74CD1D8
 
 RUN \
-   add-apt-repository "deb [arch=amd64] http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian stretch main" && \
-   echo "deb http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian stretch main" > /etc/apt/sources.list.d/mariadb.list && \
-   echo "deb-src http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian stretch main" > /etc/apt/sources.list.d/mariadb.list
+   add-apt-repository "deb [arch=amd64] http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" && \
+   echo "deb http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" > /etc/apt/sources.list.d/mariadb.list && \
+   echo "deb-src http://mirror.netinch.com/pub/mariadb/repo/${MARIADB_MAJOR}/debian buster main" > /etc/apt/sources.list.d/mariadb.list
 
 RUN \
    apt-get update && \
