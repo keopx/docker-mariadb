@@ -58,7 +58,7 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		tzdata \
 && rm -rf /var/lib/apt/lists/*
 
-# MariaDB 10.3 repository list - created 2018-12-01 12:06 UTC
+# MariaDB 10.3 repository list.
 RUN \
    apt-key adv --no-tty --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8  || \
    apt-key adv --recv-keys --keyserver pgp.mit.edu 0xF1656F24C74CD1D8  || \
@@ -91,7 +91,7 @@ VOLUME /var/lib/mysql
 
 # MariaDB start command.
 COPY ./scripts/docker-entrypoint.sh /usr/local/bin/
-RUN ln -s /usr/local/bin/docker-entrypoint.sh / # backwards compat
+RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306

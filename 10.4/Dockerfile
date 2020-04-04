@@ -56,9 +56,10 @@ RUN apt-get update && apt-get install -y --no-install-recommends \
 		apt-transport-https ca-certificates \
 		pwgen \
 		tzdata \
+		xz-utils \
 && rm -rf /var/lib/apt/lists/*
 
-# MariaDB 10.3 repository list - created 2018-12-01 12:06 UTC
+# MariaDB 10.4 repository list.
 RUN \
    apt-key adv --no-tty --recv-keys --keyserver hkp://keyserver.ubuntu.com:80 0xF1656F24C74CD1D8  || \
    apt-key adv --recv-keys --keyserver pgp.mit.edu 0xF1656F24C74CD1D8  || \
@@ -70,7 +71,7 @@ RUN \
    apt-get update && \
    apt-get -yqq install mariadb-server
 
-RUN set -ex; \	
+RUN set -ex; \
 	rm -rf /var/lib/apt/lists/*; \
 # comment out any "user" entires in the MySQL config ("docker-entrypoint.sh" or "--user" will handle user switching)
 	sed -ri 's/^user\s/#&/' /etc/mysql/my.cnf /etc/mysql/conf.d/*; \
@@ -81,7 +82,7 @@ RUN set -ex; \
 # ensure that /var/run/mysqld (used for socket and lock files) is writable regardless of the UID our mysqld instance ends up having at runtime
 	chmod 777 /var/run/mysqld; \
 # comment out a few problematic configuration values
-	find /etc/mysql/ -name '*.cnf' -print0 \
+  find /etc/mysql/ -name '*.cnf' -print0 \
 		| xargs -0 grep -lZE '^(bind-address|log)' \
 		| xargs -rt -0 sed -Ei 's/^(bind-address|log)/#&/'; \
 # don't reverse lookup hostnames, they are usually another container
@@ -91,7 +92,7 @@ VOLUME /var/lib/mysql
 
 # MariaDB start command.
 COPY ./scripts/docker-entrypoint.sh /usr/local/bin/
-RUN ln -s /usr/local/bin/docker-entrypoint.sh / # backwards compat
+RUN ln -s usr/local/bin/docker-entrypoint.sh / # backwards compat
 ENTRYPOINT ["docker-entrypoint.sh"]
 
 EXPOSE 3306
