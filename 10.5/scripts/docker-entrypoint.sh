@@ -78,12 +78,12 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 	DATADIR="$(_get_config 'datadir' "$@")"
 
 	if [ ! -d "$DATADIR/mysql" ]; then
-		# for backward compability support both DB_ and MARIADB_ env vars
-		file_env 'DB_ROOT_PASSWORD'
+		# for backward compability support both MYSQL_ and MARIADB_ env vars
+		file_env 'MYSQL_ROOT_PASSWORD'
 	  file_env 'MARIADB_ROOT_PASSWORD'
-		MARIADB_ROOT_PASSWORD="${MARIADB_ROOT_PASSWORD:-$DB_ROOT_PASSWORD}"
-		MARIADB_ALLOW_EMPTY_PASSWORD="${MARIADB_ALLOW_EMPTY_PASSWORD:-$DB_ALLOW_EMPTY_PASSWORD}"
-		MARIADB_RANDOM_ROOT_PASSWORD="${MARIADB_RANDOM_ROOT_PASSWORD:-$DB_RANDOM_ROOT_PASSWORD}"
+		MARIADB_ROOT_PASSWORD="${MARIADB_ROOT_PASSWORD:-$MYSQL_ROOT_PASSWORD}"
+		MARIADB_ALLOW_EMPTY_PASSWORD="${MARIADB_ALLOW_EMPTY_PASSWORD:-$MYSQL_ALLOW_EMPTY_PASSWORD}"
+		MARIADB_RANDOM_ROOT_PASSWORD="${MARIADB_RANDOM_ROOT_PASSWORD:-$MYSQL_RANDOM_ROOT_PASSWORD}"
 		if [ -z "$MARIADB_ROOT_PASSWORD" -a -z "$MARIADB_ALLOW_EMPTY_PASSWORD" -a -z "$MARIADB_RANDOM_ROOT_PASSWORD" ]; then
 			echo >&2 'error: database is uninitialized and password option is not specified '
 			echo >&2 '  You need to specify one of MARIADB_ROOT_PASSWORD, MARIADB_ALLOW_EMPTY_PASSWORD and MARIADB_RANDOM_ROOT_PASSWORD'
@@ -115,7 +115,7 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			exit 1
 		fi
 
-		if [ -z "${MARIADB_INITDB_SKIP_TZINFO:-$DB_INITDB_SKIP_TZINFO}" ]; then
+		if [ -z "${MARIADB_INITDB_SKIP_TZINFO:-$MYSQL_INITDB_SKIP_TZINFO}" ]; then
 			# sed is for https://bugs.mysql.com/bug.php?id=20545
 			mysql_tzinfo_to_sql /usr/share/zoneinfo | sed 's/Local time zone must be set--see zic manual page/FCTY/' | "${mysql[@]}" mysql
 		fi
@@ -128,9 +128,9 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 
 		rootCreate=
 		# default root to listen for connections from anywhere
-		file_env 'DB_ROOT_HOST'
+		file_env 'MYSQL_ROOT_HOST'
 		file_env 'MARIADB_ROOT_HOST' '%'
-		MARIADB_ROOT_HOST="${MARIADB_ROOT_HOST:-$DB_ROOT_HOST}"
+		MARIADB_ROOT_HOST="${MARIADB_ROOT_HOST:-$MYSQL_ROOT_HOST}"
 		if [ ! -z "$MARIADB_ROOT_HOST" -a "$MARIADB_ROOT_HOST" != 'localhost' ]; then
 			# no, we don't care if read finds a terminating character in this heredoc
 			# https://unix.stackexchange.com/questions/265149/why-is-set-o-errexit-breaking-this-read-heredoc-expression/265151#265151
@@ -157,20 +157,20 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			mysql+=( -p"${MARIADB_ROOT_PASSWORD}" )
 		fi
 
-		file_env 'DB_DATABASE'
+		file_env 'MYSQL_DATABASE'
 		file_env 'MARIADB_DATABASE'
-		MARIADB_DATABASE="${MARIADB_DATABASE:-$DB_DATABASE}"
+		MARIADB_DATABASE="${MARIADB_DATABASE:-$MYSQL_DATABASE}"
 		if [ "$MARIADB_DATABASE" ]; then
 			echo "CREATE DATABASE IF NOT EXISTS \`$MARIADB_DATABASE\` ;" | "${mysql[@]}"
 			mysql+=( "$MARIADB_DATABASE" )
 		fi
 
-		file_env 'DB_USER'
+		file_env 'MYSQL_USER'
 		file_env 'MARIADB_USER'
-		MARIADB_USER="${MARIADB_USER:-$DB_USER}"
-		file_env 'DB_PASSWORD'
+		MARIADB_USER="${MARIADB_USER:-$MYSQL_USER}"
+		file_env 'MYSQL_PASSWORD'
 		file_env 'MARIADB_PASSWORD'
-		MARIADB_PASSWORD="${MARIADB_PASSWORD:-$DB_PASSWORD}"
+		MARIADB_PASSWORD="${MARIADB_PASSWORD:-$MYSQL_PASSWORD}"
 		if [ "$MARIADB_USER" -a "$MARIADB_PASSWORD" ]; then
 			echo "CREATE USER '$MARIADB_USER'@'%' IDENTIFIED BY '$MARIADB_PASSWORD' ;" | "${mysql[@]}"
 
