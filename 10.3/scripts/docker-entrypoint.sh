@@ -157,9 +157,9 @@ if [ "$1" = 'mysqld' -a -z "$wantHelp" ]; then
 			mysql+=( -p"${MARIADB_ROOT_PASSWORD}" )
 		fi
 
-		file_env 'DB_DATABASE'
+		file_env 'DB_NAME'
 		file_env 'MARIADB_DATABASE'
-		MARIADB_DATABASE="${MARIADB_DATABASE:-$DB_DATABASE}"
+		MARIADB_DATABASE="${MARIADB_DATABASE:-$DB_NAME}"
 		if [ "$MARIADB_DATABASE" ]; then
 			echo "CREATE DATABASE IF NOT EXISTS \`$MARIADB_DATABASE\` ;" | "${mysql[@]}"
 			mysql+=( "$MARIADB_DATABASE" )

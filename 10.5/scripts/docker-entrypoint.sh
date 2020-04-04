@@ -162,7 +162,7 @@ docker_setup_env() {
 
 	# Initialize values that might be stored in a file
 	file_env 'DB_ROOT_HOST' '%'
-	file_env 'DB_DATABASE'
+	file_env 'DB_NAME'
 	file_env 'DB_USER'
 	file_env 'DB_PASSWORD'
 	file_env 'DB_ROOT_PASSWORD'
@@ -184,8 +184,8 @@ docker_process_sql() {
 		shift
 	fi
 	# args sent in can override this db, since they will be later in the command
-	if [ -n "$DB_DATABASE" ]; then
-		set -- --database="$DB_DATABASE" "$@"
+	if [ -n "$DB_NAME" ]; then
+		set -- --database="$DB_NAME" "$@"
 	fi
 
 	mysql --defaults-extra-file=<( _mysql_passfile "${passfileArgs[@]}") --protocol=socket -uroot -hlocalhost --socket="${SOCKET}" "$@"
@@ -237,18 +237,18 @@ docker_setup_db() {
 	EOSQL
 
 	# Creates a custom database and user if specified
-	if [ -n "$DB_DATABASE" ]; then
-		mysql_note "Creating database ${DB_DATABASE}"
-		docker_process_sql --database=mysql <<<"CREATE DATABASE IF NOT EXISTS \`$DB_DATABASE\` ;"
+	if [ -n "$DB_NAME" ]; then
+		mysql_note "Creating database ${DB_NAME}"
+		docker_process_sql --database=mysql <<<"CREATE DATABASE IF NOT EXISTS \`$DB_NAME\` ;"
 	fi
 
 	if [ -n "$DB_USER" ] && [ -n "$DB_PASSWORD" ]; then
 		mysql_note "Creating user ${DB_USER}"
 		docker_process_sql --database=mysql <<<"CREATE USER '$DB_USER'@'%' IDENTIFIED BY '$DB_PASSWORD' ;"
 
-		if [ -n "$DB_DATABASE" ]; then
-			mysql_note "Giving user ${DB_USER} access to schema ${DB_DATABASE}"
-			docker_process_sql --database=mysql <<<"GRANT ALL ON \`$DB_DATABASE\`.* TO '$DB_USER'@'%' ;"
+		if [ -n "$DB_NAME" ]; then
+			mysql_note "Giving user ${DB_USER} access to schema ${DB_NAME}"
+			docker_process_sql --database=mysql <<<"GRANT ALL ON \`$DB_NAME\`.* TO '$DB_USER'@'%' ;"
 		fi
 
 		docker_process_sql --database=mysql <<<"FLUSH PRIVILEGES ;"
